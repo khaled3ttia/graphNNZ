@@ -1,0 +1,20 @@
+Parsing Graph File data/facebook_combined.txt as an undirected graph...
+Renaming vertices is OFF
+Pattern Matching vector size is:4
+Matrix Dimension not divisible by selected vector size
+1 1 1 1 : 1191
+1 1 1 0 : 1051
+1 1 0 1 : 574
+1 1 0 0 : 3875
+1 0 1 1 : 700
+1 0 1 0 : 3571
+1 0 0 1 : 3861
+1 0 0 0 : 31663
+0 1 1 1 : 636
+0 1 1 0 : 2915
+0 1 0 1 : 3392
+0 1 0 0 : 28697
+0 0 1 1 : 3430
+0 0 1 0 : 28968
+0 0 0 1 : 31382
+0 0 0 0 : 3925406
