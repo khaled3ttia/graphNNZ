@@ -27,4 +27,4 @@ Also, you can simply run `run.sh` which runs 3 sample datasets with appropriate 
 
 `--no-rename` : instructs the script to skip renaming vertices. 
 
-
+`--coverage` : (optional) an integer number that can be used as input, to find out the patterns that cover that percentage of non-zeros. Default value is 100%. This uses a greedy algorithm that proritizes patterns with the highest number of non-zeros first. 
