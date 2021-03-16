@@ -55,52 +55,37 @@ def parseGraph(graphFile, directed=False, rename=False):
     return adjacencyDict, maxDim
 
 
-''' TODO: Do we really need to build the full adjacency matrix?
-def buildDenseMat(graphDict, maxDim):
-    adjacencyMat = []
-    #maxDim = max(graphDict)
-    for i in range(maxDim):
-        adjacencyMat.append([])
-        if i in graphDict:
-
-            for j in range(maxDim):
-                if j in graphDict[i]:
-                    adjacencyMat[i].append(1)
-                else:
-                    adjacencyMat[i].append(0)
-        else:
-            adjacencyMat[i] = [0 for x in range(maxDim)]
-
-    return adjacencyMat
-'''
 
 def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
     print(f'Pattern Matching vector size is:{vectorSize}')
     counterDict = {}
-    if maxDim % vectorSize == 0:
-        print('Matrix Dimension is divisible by selected vector size')
-        end = maxDim - vectorSize
-    else:
-        print('Matrix Dimension not divisible by selected vector size')
-        end = maxDim - 2*vectorSize
-
     for k in graphDict:
         currentRow = graphDict[k]
         currentDenseRow = [1 if x in currentRow else 0 for x in range(0, maxDim)]
-        for i in range(0, end, vectorSize):
-            for comb in itertools.product([1,0], repeat=vectorSize):
-                pattString = ' '.join([str(elem) for elem in list(comb)])
-                if (not pattString in counterDict):
-                    counterDict[pattString] = 0
-                if (list(comb) == currentDenseRow[i:i+vectorSize]):
-                    counterDict[pattString] +=1 
-                    break
+        j = 0  
+        while(j < maxDim):
+            if currentDenseRow[j] == 0:
+                j += 1 
+                continue
+            else:
+                if maxDim - j < vectorSize:
+                    j = maxDim - vectorSize
+                start = currentDenseRow[j]
+                currentSlice = currentDenseRow[j:j+vectorSize]
+                patt = [1 if x == 1 else 0 for x in range(vectorSize)]
+                
+                for comb in itertools.product([1,0], repeat=vectorSize):
+                    pattString = ' '.join([str(elem) for elem in list(comb)])
+                    if (list(comb) == currentSlice):
+                        if (not pattString in counterDict):
+                            counterDict[pattString] = 0 
+                        counterDict[pattString] += 1 
+                        break
+                j += vectorSize
 
-        #TODO: at this point, we might have some leftover elements at each row
-        # if maxDim is not divisible by vectorSize
-
+    sorted_counter = {k: v for k,v in sorted(counterDict.items(), key=lambda item: item[1], reverse=True)}
     # printout stats results        
-    for k, v in counterDict.items():
+    for k, v in sorted_counter.items():
         print(f"{k} : {v}")
 
 def countPatterns(inputMat, vectorSize = 4):
