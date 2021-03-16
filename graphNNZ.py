@@ -11,9 +11,12 @@ def parseGraph(graphFile, directed=False, rename=False):
     nameMap = {}
 
     i = 0
-    maxDim = 0 
+    maxDim = 0
+    numEdges = 0 
+    
     with open(graphFile, 'r') as gfile:
         for line in gfile:
+            
             nodeList = line.rstrip().split()
             # parse the src and destination nodes
             srcNode = int(nodeList[0])
@@ -41,6 +44,7 @@ def parseGraph(graphFile, directed=False, rename=False):
             if srcNode not in adjacencyDict:
                 adjacencyDict[srcNode] = []
             adjacencyDict[srcNode].append(dstNode)
+            numEdges += 1 
 
             # If the graph is undirected, we need to add another
             # entry for the destination node as well
@@ -51,8 +55,11 @@ def parseGraph(graphFile, directed=False, rename=False):
                 if dstNode not in adjacencyDict:
                     adjacencyDict[dstNode] = []
                 adjacencyDict[dstNode].append(srcNode)
+                numEdges += 1 
 
-    return adjacencyDict, maxDim
+    print(f"numEdges: {numEdges}")
+
+    return adjacencyDict, (maxDim,numEdges)
 
 
 
@@ -87,7 +94,7 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
     
     return sorted_counter
 
-def analyzeCount(counterDict):
+def analyzeCount(counterDict, totalNNZ):
     
     for k in counterDict:
         intK = [int(x) for x in k.split()]
@@ -96,7 +103,8 @@ def analyzeCount(counterDict):
             if j == 1: 
                 onesCount += 1
         nnzCoverage = onesCount * counterDict[k]
-        print(f"{k}:{counterDict[k]}:{nnzCoverage}")
+        nnzPercentage = (nnzCoverage / totalNNZ) * 100
+        print(f"{k} : {counterDict[k]} : {nnzCoverage} : {nnzPercentage: .2f}%")
 
 def countPatterns(inputMat, vectorSize = 4):
 
@@ -182,6 +190,6 @@ if __name__ == '__main__':
     print(f"Parsing Graph File {args.input} as a{' directed' if args.directed else 'n undirected'} graph...\nRenaming vertices is {'ON' if args.rename else 'OFF'}")
 
 
-    graphDict, maxDim = parseGraph(args.input, directed=args.directed, rename=args.rename)
+    graphDict, (maxDim,numEdges) = parseGraph(args.input, directed=args.directed, rename=args.rename)
     counterDict = newCountPatterns(graphDict, maxDim, vectorSize=int(args.vsize))
-    analyzeCount(counterDict)
+    analyzeCount(counterDict, numEdges)
