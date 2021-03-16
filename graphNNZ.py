@@ -57,7 +57,7 @@ def parseGraph(graphFile, directed=False, rename=False):
                 adjacencyDict[dstNode].append(srcNode)
                 numEdges += 1 
 
-    print(f"numEdges: {numEdges}")
+    print(f"Number of edges: {numEdges}\nNumber of vertices: {maxDim}")
 
     return adjacencyDict, (maxDim,numEdges)
 
@@ -94,17 +94,37 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
     
     return sorted_counter
 
-def analyzeCount(counterDict, totalNNZ):
-    
+def analyzeCount(counterDict, totalNNZ, coverage):
+    analysisDict = {} 
     for k in counterDict:
         intK = [int(x) for x in k.split()]
         onesCount = 0 
         for j in intK:
             if j == 1: 
                 onesCount += 1
-        nnzCoverage = onesCount * counterDict[k]
-        nnzPercentage = (nnzCoverage / totalNNZ) * 100
-        print(f"{k} : {counterDict[k]} : {nnzCoverage} : {nnzPercentage: .2f}%")
+        analysisDict[k] = onesCount
+    sorted_analysis = {k: v for k,v in sorted(analysisDict.items(), key=lambda item: item[1], reverse=True)}
+    
+    print("Full patterns coverage")
+    for k, v in counterDict.items():
+        p = int((( v * analysisDict[k]) / totalNNZ) * 100)
+        print(f"{k} : {counterDict[k]} : {p}%")
+    
+    if coverage < 100:
+
+        print("==============")
+        print(f"Pattern coverage for {coverage}% of the NNZ")
+        for k, v in sorted_analysis.items():
+            if coverage == 0:
+                break
+            percentage = int(((v * counterDict[k]) / totalNNZ )* 100)
+            if percentage <= coverage:
+                print(f"{k} : {percentage}%")
+                coverage -= percentage
+            else:
+                print(f"{k} : {coverage}%")
+                coverage = 0
+
 
 def countPatterns(inputMat, vectorSize = 4):
 
@@ -185,6 +205,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--vsize", dest='vsize', required=False, default=4, help="pattern matching vector size")
 
+    parser.add_argument("--coverage", type=int, required=False, default=100, help="Required percentage of non-zero coverage")
     args = parser.parse_args()
 
     print(f"Parsing Graph File {args.input} as a{' directed' if args.directed else 'n undirected'} graph...\nRenaming vertices is {'ON' if args.rename else 'OFF'}")
@@ -192,4 +213,4 @@ if __name__ == '__main__':
 
     graphDict, (maxDim,numEdges) = parseGraph(args.input, directed=args.directed, rename=args.rename)
     counterDict = newCountPatterns(graphDict, maxDim, vectorSize=int(args.vsize))
-    analyzeCount(counterDict, numEdges)
+    analyzeCount(counterDict, numEdges, args.coverage)
