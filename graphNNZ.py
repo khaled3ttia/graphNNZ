@@ -84,9 +84,19 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
                 j += vectorSize
 
     sorted_counter = {k: v for k,v in sorted(counterDict.items(), key=lambda item: item[1], reverse=True)}
-    # printout stats results        
-    for k, v in sorted_counter.items():
-        print(f"{k} : {v}")
+    
+    return sorted_counter
+
+def analyzeCount(counterDict):
+    
+    for k in counterDict:
+        intK = [int(x) for x in k.split()]
+        onesCount = 0 
+        for j in intK:
+            if j == 1: 
+                onesCount += 1
+        nnzCoverage = onesCount * counterDict[k]
+        print(f"{k}:{counterDict[k]}:{nnzCoverage}")
 
 def countPatterns(inputMat, vectorSize = 4):
 
@@ -173,5 +183,5 @@ if __name__ == '__main__':
 
 
     graphDict, maxDim = parseGraph(args.input, directed=args.directed, rename=args.rename)
-    newCountPatterns(graphDict, maxDim, vectorSize=int(args.vsize))
-    
+    counterDict = newCountPatterns(graphDict, maxDim, vectorSize=int(args.vsize))
+    analyzeCount(counterDict)
