@@ -94,35 +94,59 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
     
     return sorted_counter
 
-def analyzeCount(counterDict, totalNNZ, coverage):
-    analysisDict = {} 
+def analyzeCount(counterDict, totalNNZ, coverage, sortby='npatterns'):
+
+    onesDict = {} 
+    coverageDict = {}
     for k in counterDict:
         intK = [int(x) for x in k.split()]
         onesCount = 0 
         for j in intK:
             if j == 1: 
                 onesCount += 1
-        analysisDict[k] = onesCount
-    sorted_analysis = {k: v for k,v in sorted(analysisDict.items(), key=lambda item: item[1], reverse=True)}
+        onesDict[k] = onesCount
+        coverageDict[k] = (onesCount * counterDict[k] / totalNNZ * 100)
+
+   
+    # sort onesDict in a reverse order (the first entry would be the pattern with all ones)
+    # this will be used in the greedy knapsacking (generating coverage for an input percentage)
+    sortedby_ones = {k: v for k,v in sorted(onesDict.items(), key=lambda item: item[1], reverse=True)}
+   
+    # sort by coverage
+    sortedby_coverage = {k: v for k,v in sorted(coverageDict.items(), key=lambda item: item[1], reverse=True)}
     
     print("Full patterns coverage")
-    for k, v in counterDict.items():
-        p = int((( v * analysisDict[k]) / totalNNZ) * 100)
-        print(f"{k} : {counterDict[k]} : {p}%")
-    
+    if sortby == 'npatterns':
+        print("Sorted by frequency of patterns (high to low)")
+    else:
+        print("Sorted by coverage of NNZs (high to low)")
+
+    print("Pattern  |  Frequency | NNZ coverage percentage% ")
+    if sortby == 'npatterns':
+        for k, v in counterDict.items():
+            #p = int((( v * analysisDict[k]) / totalNNZ) * 100)
+            print(f"{k} : {v} : {coverageDict[k] : .3f}%")
+    else:
+        for k, v in sortedby_coverage.items():
+            print(f"{k} : {counterDict[k]} : {v : .3f}%")
+
+    # If the user enters a coverage percentage, this part will find the target coverage
+    # by exhausting patterns with most ones first (most non-zeros)
+
     if coverage < 100:
 
         print("==============")
         print(f"Pattern coverage for {coverage}% of the NNZ")
-        for k, v in sorted_analysis.items():
+        for k, v in sortedby_ones.items():
             if coverage == 0:
                 break
-            percentage = int(((v * counterDict[k]) / totalNNZ )* 100)
+            #percentage = int(((v * counterDict[k]) / totalNNZ )* 100)
+            percentage = coverageDict[k]
             if percentage <= coverage:
-                print(f"{k} : {percentage}%")
+                print(f"{k} : {percentage: 0.3f}%")
                 coverage -= percentage
             else:
-                print(f"{k} : {coverage}%")
+                print(f"{k} : {coverage: 0.3f}%")
                 coverage = 0
 
 
@@ -206,6 +230,9 @@ if __name__ == '__main__':
     parser.add_argument("--vsize", dest='vsize', required=False, default=4, help="pattern matching vector size")
 
     parser.add_argument("--coverage", type=int, required=False, default=100, help="Required percentage of non-zero coverage")
+    
+    parser.add_argument("--sortby", type=str, required=False, default='npatterns', help="Sort output by either 'npatterns' (default) or 'coverage'")
+
     args = parser.parse_args()
 
     print(f"Parsing Graph File {args.input} as a{' directed' if args.directed else 'n undirected'} graph...\nRenaming vertices is {'ON' if args.rename else 'OFF'}")
@@ -213,4 +240,4 @@ if __name__ == '__main__':
 
     graphDict, (maxDim,numEdges) = parseGraph(args.input, directed=args.directed, rename=args.rename)
     counterDict = newCountPatterns(graphDict, maxDim, vectorSize=int(args.vsize))
-    analyzeCount(counterDict, numEdges, args.coverage)
+    analyzeCount(counterDict, numEdges, args.coverage, args.sortby)
