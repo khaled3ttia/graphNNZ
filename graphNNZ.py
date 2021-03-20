@@ -43,8 +43,8 @@ def parseGraph(graphFile, directed=False, rename=False):
 
             # Append dstNode to the list of srcNode adjacents
             if srcNode not in adjacencyDict:
-                adjacencyDict[srcNode] = []
-            adjacencyDict[srcNode].append(dstNode)
+                adjacencyDict[srcNode] = set()
+            adjacencyDict[srcNode].add(dstNode)
             numEdges += 1 
 
             # If the graph is undirected, we need to add another
@@ -54,8 +54,8 @@ def parseGraph(graphFile, directed=False, rename=False):
             # and A in the adjacency list of B
             if (not directed):
                 if dstNode not in adjacencyDict:
-                    adjacencyDict[dstNode] = []
-                adjacencyDict[dstNode].append(srcNode)
+                    adjacencyDict[dstNode] = set()
+                adjacencyDict[dstNode].add(srcNode)
                 numEdges += 1 
 
     print(f"Number of edges: {numEdges}\nNumber of vertices: {maxDim}")
