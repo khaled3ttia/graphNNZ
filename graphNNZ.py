@@ -58,6 +58,7 @@ def parseGraph(graphFile, directed=False, rename=False):
                 adjacencyDict[dstNode].add(srcNode)
                 numEdges += 1 
 
+    maxDim += 1
     print(f"Number of edges: {numEdges}\nNumber of vertices: {maxDim}")
 
     return adjacencyDict, (maxDim,numEdges)
@@ -95,11 +96,13 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
     
     return sorted_counter
 
-def analyzeCount(counterDict, vsize, totalNNZ, coverage, outputFileName, top, sortby='npatterns'):
+def analyzeCount(counterDict, maxDim,  vsize, totalNNZ, coverage, outputFileName, top, sortby='npatterns'):
     
 
     onesDict = {} 
     coverageDict = {}
+    
+
     for k in counterDict:
         intK = [int(x) for x in k]
         onesCount = 0 
@@ -169,10 +172,10 @@ def analyzeCount(counterDict, vsize, totalNNZ, coverage, outputFileName, top, so
             else:
                 print(f"{k} : {coverage: 0.3f}%")
                 coverage = 0
-    plotPatterns(counterDict, vsize, totalNNZ, 'count_'+ outputFileName + '.png')
-    plotPatterns(sortedby_coverage, vsize, totalNNZ, 'perc_' + outputFileName + '.png')
+    plotPatterns(counterDict, maxDim, vsize, 'count_'+ outputFileName + '.png')
+    plotPatterns(sortedby_coverage, maxDim,  vsize, 'perc_' + outputFileName + '.png')
 
-def plotPatterns(pattDict, vectorSize, totalNNZ, filename):
+def plotPatterns(pattDict, numVertices,  vectorSize, filename):
     
     useDecimalEq = False
     if (len(pattDict) > 30):
@@ -199,7 +202,7 @@ def plotPatterns(pattDict, vectorSize, totalNNZ, filename):
     ax = fig.add_axes([0,0,1,1])
     ax.bar(x,list(pattDict.values()))
 
-    ax.set_title(f"{yAx} for {totalNNZ} vertices graph\nVector Size={vectorSize}\nTop Pattern={x[0]} {'' if not useDecimalEq else '('+ list(pattDict.keys())[0]  +')'  }")
+    ax.set_title(f"{yAx} for {numVertices} vertices graph\nVector Size={vectorSize}\nTop Pattern={x[0]} {'' if not useDecimalEq else '('+ list(pattDict.keys())[0]  +')'  }")
     ax.set_xlabel(xAx)
     ax.set_ylabel(yAx)
     
@@ -301,6 +304,6 @@ if __name__ == '__main__':
 
     graphDict, (maxDim,numEdges) = parseGraph(args.input, directed=args.directed, rename=args.rename)
     counterDict = newCountPatterns(graphDict,  maxDim, vectorSize=int(args.vsize))
-    analyzeCount(counterDict, args.vsize, numEdges, args.coverage, args.out, args.top, args.sortby)
+    analyzeCount(counterDict, maxDim, args.vsize, numEdges, args.coverage, args.out, args.top, args.sortby)
 
     
