@@ -95,7 +95,8 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
     
     return sorted_counter
 
-def analyzeCount(counterDict, vsize, totalNNZ, coverage, outputFileName, sortby='npatterns'):
+def analyzeCount(counterDict, vsize, totalNNZ, coverage, outputFileName, top, sortby='npatterns'):
+    
 
     onesDict = {} 
     coverageDict = {}
@@ -123,13 +124,32 @@ def analyzeCount(counterDict, vsize, totalNNZ, coverage, outputFileName, sortby=
         print("Sorted by coverage of NNZs (high to low)")
 
     print("Pattern  |  Frequency | NNZ coverage percentage% ")
-    if sortby == 'npatterns':
-        for k, v in counterDict.items():
-            #p = int((( v * analysisDict[k]) / totalNNZ) * 100)
-            print(f"{k} : {int(k,2)} : {v} : {coverageDict[k] : .3f}%")
+   
+    if top != -1: 
+        printed = 0
+        if sortby == 'npatterns':
+
+            for k, v in counterDict.items():
+                if printed == top:
+                    break
+                
+                print(f"{k} : {int(k,2)} : {v} : {coverageDict[k] : .3f}%")
+                printed += 1
+        else:
+            for k, v in sortedby_coverage.items():
+                if printed == top:
+                    break
+                print(f"{k} : {int(k,2)} : {counterDict[k]} : {v : .3f}%")
+                printed += 1
     else:
-        for k, v in sortedby_coverage.items():
-            print(f"{k} : {int(k,2)} : {counterDict[k]} : {v : .3f}%")
+        if sortby == 'npatterns':
+            for k, v in counterDict.items():
+                print(f"{k} : {int(k,2)} : {v} : {coverageDict[k] : .3f}%")
+        else:
+            for k, v in sortedby_coverage.items():
+                print(f"{k} : {int(k,2)} : {counterDict[k]} : {v : .3f}%")
+     
+
 
     # If the user enters a coverage percentage, this part will find the target coverage
     # by exhausting patterns with most ones first (most non-zeros)
@@ -175,8 +195,6 @@ def plotPatterns(pattDict, vectorSize, totalNNZ, filename):
         x = list(pattDict.keys())
         xAx = 'Patterns' 
 
-    #print(x)
-    #return 
     fig = plt.figure()
     ax = fig.add_axes([0,0,1,1])
     ax.bar(x,list(pattDict.values()))
@@ -184,8 +202,6 @@ def plotPatterns(pattDict, vectorSize, totalNNZ, filename):
     ax.set_title(f"{yAx} for {totalNNZ} vertices graph\nVector Size={vectorSize}\nTop Pattern={x[0]} {'' if not useDecimalEq else '('+ list(pattDict.keys())[0]  +')'  }")
     ax.set_xlabel(xAx)
     ax.set_ylabel(yAx)
-    #ax.set_xticks(x)
-    #ax.axvline(x=x[0], color='red', label=f'x = {x[0]}', in_layout=True)
     
     fig.savefig(filename, bbox_inches='tight')
 
@@ -276,6 +292,8 @@ if __name__ == '__main__':
 
     parser.add_argument("--out", type=str, required=False, default='output', help="Output file(s) path")
 
+    parser.add_argument("--top", type=int, required=False, default=-1, help="Number of pattern statistics to print (top x)")
+
     args = parser.parse_args()
 
     print(f"Parsing Graph File {args.input} as a{' directed' if args.directed else 'n undirected'} graph...\nRenaming vertices is {'ON' if args.rename else 'OFF'}")
@@ -283,6 +301,6 @@ if __name__ == '__main__':
 
     graphDict, (maxDim,numEdges) = parseGraph(args.input, directed=args.directed, rename=args.rename)
     counterDict = newCountPatterns(graphDict,  maxDim, vectorSize=int(args.vsize))
-    analyzeCount(counterDict, args.vsize, numEdges, args.coverage, args.out, args.sortby)
+    analyzeCount(counterDict, args.vsize, numEdges, args.coverage, args.out, args.top, args.sortby)
 
     
