@@ -1,0 +1,19 @@
+Parsing Graph File data/CA-HepTh.txt as an undirected graph...
+Renaming vertices is ON
+Number of edges: 103942
+Number of vertices: 9877
+Pattern Matching vector size is:4
+Full patterns coverage
+Sorted by frequency of patterns (high to low)
+Pattern  |  Frequency | NNZ coverage percentage% 
+1000 : 29943 :  28.807%
+1100 : 2486 :  4.783%
+1111 : 1710 :  6.581%
+1010 : 1358 :  2.613%
+1001 : 1110 :  2.136%
+1110 : 948 :  2.736%
+1011 : 439 :  1.267%
+1101 : 371 :  1.071%
+0011 : 1 :  0.002%
+0101 : 1 :  0.002%
+0110 : 1 :  0.002%

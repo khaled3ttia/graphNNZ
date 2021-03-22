@@ -1,0 +1,16 @@
+Parsing Graph File data/twitter_clean.txt as a directed graph...
+Renaming vertices is ON
+Number of edges: 1768149
+Number of vertices: 81306
+Pattern Matching vector size is:4
+Full patterns coverage
+Sorted by frequency of patterns (high to low)
+Pattern  |  Frequency | NNZ coverage percentage% 
+1000 : 841578 :  47.597%
+1100 : 90172 :  10.200%
+1010 : 66206 :  7.489%
+1001 : 57984 :  6.559%
+1111 : 55638 :  12.587%
+1110 : 37705 :  6.397%
+1101 : 27248 :  4.623%
+1011 : 26812 :  4.549%

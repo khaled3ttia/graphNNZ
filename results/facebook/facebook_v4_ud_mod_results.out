@@ -1,0 +1,20 @@
+Parsing Graph File data/facebook_combined.txt as an undirected graph...
+Renaming vertices is OFF
+Number of edges: 176468
+Number of vertices: 4039
+Pattern Matching vector size is:4
+Full patterns coverage
+Sorted by frequency of patterns (high to low)
+Pattern  |  Frequency | NNZ coverage percentage% 
+1000 : 96223 :  54.527%
+1100 : 10601 :  12.015%
+1001 : 9828 :  11.139%
+1010 : 8667 :  9.823%
+1110 : 2005 :  3.409%
+1101 : 1677 :  2.851%
+1111 : 1625 :  3.683%
+1011 : 1499 :  2.548%
+0001 : 6 :  0.003%
+0011 : 2 :  0.002%
+0010 : 1 :  0.001%
+0100 : 1 :  0.001%

@@ -82,7 +82,12 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
                 start = currentDenseRow[j]
                 currentSlice = currentDenseRow[j:j+vectorSize]
                 patt = [1 if x == 1 else 0 for x in range(vectorSize)]
-                
+                pattString = ''.join([str(elem) for elem in currentSlice])
+                if (not pattString in counterDict):
+                    counterDict[pattString] = 0 
+                counterDict[pattString] += 1 
+
+                ''' Alternative method using itertools
                 for comb in itertools.product([1,0], repeat=vectorSize):
                     pattString = ''.join([str(elem) for elem in list(comb)])
                     if (list(comb) == currentSlice):
@@ -90,6 +95,7 @@ def newCountPatterns(graphDict, maxDim,  vectorSize = 4):
                             counterDict[pattString] = 0 
                         counterDict[pattString] += 1 
                         break
+                '''
                 j += vectorSize
 
     sorted_counter = {k: v for k,v in sorted(counterDict.items(), key=lambda item: item[1], reverse=True)}
@@ -136,21 +142,21 @@ def analyzeCount(counterDict, maxDim,  vsize, totalNNZ, coverage, outputFileName
                 if printed == top:
                     break
                 
-                print(f"{k} : {int(k,2)} : {v} : {coverageDict[k] : .3f}%")
+                print(f"{k} : {v} : {coverageDict[k] : .3f}%")
                 printed += 1
         else:
             for k, v in sortedby_coverage.items():
                 if printed == top:
                     break
-                print(f"{k} : {int(k,2)} : {counterDict[k]} : {v : .3f}%")
+                print(f"{k} : {counterDict[k]} : {v : .3f}%")
                 printed += 1
     else:
         if sortby == 'npatterns':
             for k, v in counterDict.items():
-                print(f"{k} : {int(k,2)} : {v} : {coverageDict[k] : .3f}%")
+                print(f"{k} : {v} : {coverageDict[k] : .3f}%")
         else:
             for k, v in sortedby_coverage.items():
-                print(f"{k} : {int(k,2)} : {counterDict[k]} : {v : .3f}%")
+                print(f"{k} : {counterDict[k]} : {v : .3f}%")
      
 
 
@@ -200,11 +206,12 @@ def plotPatterns(pattDict, numVertices,  vectorSize, filename):
 
     fig = plt.figure()
     ax = fig.add_axes([0,0,1,1])
-    ax.bar(x,list(pattDict.values()))
+    ax.scatter(x,list(pattDict.values()))
 
     ax.set_title(f"{yAx} for {numVertices} vertices graph\nVector Size={vectorSize}\nTop Pattern={x[0]} {'' if not useDecimalEq else '('+ list(pattDict.keys())[0]  +')'  }")
     ax.set_xlabel(xAx)
     ax.set_ylabel(yAx)
+    ax.set_xscale('log', basex=2)
     
     fig.savefig(filename, bbox_inches='tight')
 
